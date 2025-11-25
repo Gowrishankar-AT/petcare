@@ -25,11 +25,18 @@ const catBreeds = ["Persian", "Siamese", "Maine Coon", "Ragdoll", "Bengal", "Oth
 
 const PetForm: React.FC<PetFormProps> = ({ initialData, onSave, onCancel }) => {
   const { toast } = useToast();
+
   const [petData, setPetData] = useState<Pet>(
     initialData || { name: "", type: "", breed: "", age: "", gender: "" }
   );
 
   const breedOptions = petData.type === "Dog" ? dogBreeds : petData.type === "Cat" ? catBreeds : [];
+
+  useEffect(() => {
+    if (initialData) {
+      setPetData(initialData);
+    }
+  }, [initialData]);
 
   const handleSubmit = () => {
     if (!petData.name || !petData.type || !petData.age) {
@@ -41,7 +48,6 @@ const PetForm: React.FC<PetFormProps> = ({ initialData, onSave, onCancel }) => {
       return;
     }
     onSave(petData);
-    setPetData({ name: "", type: "", breed: "", age: "", gender: "" });
   };
 
   return (
@@ -61,9 +67,7 @@ const PetForm: React.FC<PetFormProps> = ({ initialData, onSave, onCancel }) => {
         <select
           className="border rounded p-2 w-full"
           value={petData.type}
-          onChange={(e) =>
-            setPetData({ ...petData, type: e.target.value, breed: "" })
-          }
+          onChange={(e) => setPetData({ ...petData, type: e.target.value, breed: "" })}
         >
           <option value="">Select</option>
           <option value="Dog">Dog</option>
@@ -80,9 +84,7 @@ const PetForm: React.FC<PetFormProps> = ({ initialData, onSave, onCancel }) => {
               <select
                 className="border rounded p-2 w-full"
                 value={petData.breed}
-                onChange={(e) =>
-                  setPetData({ ...petData, breed: e.target.value })
-                }
+                onChange={(e) => setPetData({ ...petData, breed: e.target.value })}
               >
                 <option value="">Select Breed</option>
                 {breedOptions.map((b) => (
@@ -95,9 +97,8 @@ const PetForm: React.FC<PetFormProps> = ({ initialData, onSave, onCancel }) => {
               {petData.breed === "Other" && (
                 <Input
                   placeholder="Enter breed manually"
-                  onChange={(e) =>
-                    setPetData({ ...petData, breed: e.target.value })
-                  }
+                  onChange={(e) => setPetData({ ...petData, breed: e.target.value })}
+                  value={petData.breed === "Other" ? "" : petData.breed}
                 />
               )}
             </>

@@ -56,7 +56,7 @@ const HistoryPage: React.FC = () => {
       service: "Annual Vaccination",
       veterinarian: "Dr. Wilson",
       date: "2025-01-12",
-      prescriptionImage: "https://via.placeholder.com/200x150?text=Prescription",
+      prescriptionImage: "https://www.researchgate.net/publication/345830022/figure/fig17/AS:957640066748426@1605330592186/A-sample-prescription-image-in-grayscale-version.png",
     },
     {
       id: "2",
@@ -73,7 +73,7 @@ const HistoryPage: React.FC = () => {
       treatment: "Topical medication + flea prevention",
       vetNotes: "Advised monthly flea preventive.",
       date: "2024-11-20",
-      recordImage: "https://via.placeholder.com/200x150?text=Medical+Record",
+      recordImage: "https://www.researchgate.net/publication/345830022/figure/fig17/AS:957640066748426@1605330592186/A-sample-prescription-image-in-grayscale-version.png",
     },
     {
       id: "2",
@@ -118,7 +118,7 @@ const HistoryPage: React.FC = () => {
                 <p><strong>Veterinarian:</strong> {appt.veterinarian}</p>
                 <p><strong>Date:</strong> {appt.date}</p>
                 {appt.prescriptionImage && (
-                  <img src="" alt="Prescription" className="mt-2 w-48 h-32 object-cover rounded" />
+                  <img src="https://www.researchgate.net/publication/345830022/figure/fig17/AS:957640066748426@1605330592186/A-sample-prescription-image-in-grayscale-version.png" alt="Prescription" className="mt-2 w-48 h-32 object-cover rounded" />
                 )}
               </div>
             ))}

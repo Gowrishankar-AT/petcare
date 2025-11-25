@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-import PetForm, { Pet } from "@/components/petform"; // ✅ IMPORT YOUR PET FORM
+import PetForm, { Pet } from "@/components/petform";
 
 // SAMPLE DATA
-const petsData: Pet[] = [
+const petsDataInitial: Pet[] = [
   {
     id: "1",
     name: "Buddy",
@@ -12,7 +12,8 @@ const petsData: Pet[] = [
     breed: "Golden Retriever",
     age: "2 years",
     gender: "Male",
-    image:"https://images.unsplash.com/photo-1653763902913-e87c886a4a0c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Z29sZGVucmV0cmlldmVyfGVufDB8fDB8fHww",
+    image:
+      "https://images.unsplash.com/photo-1653763902913-e87c886a4a0c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Z29sZGVucmV0cmlldmVyfGVufDB8fDB8fHww",
   },
   {
     id: "2",
@@ -21,7 +22,8 @@ const petsData: Pet[] = [
     breed: "Beagle",
     age: "1 year",
     gender: "Male",
-    image:"https://images.unsplash.com/photo-1707298737261-069e2d529eaa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmVhZ2xlfGVufDB8fDB8fHww",
+    image:
+      "https://images.unsplash.com/photo-1707298737261-069e2d529eaa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmVhZ2xlfGVufDB8fDB8fHww",
   },
   {
     id: "3",
@@ -30,7 +32,8 @@ const petsData: Pet[] = [
     breed: "Persian",
     age: "3 years",
     gender: "Female",
-    image:"https://images.unsplash.com/photo-1660983947114-d893fcf89c7a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cGVyc2lhbiUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
+    image:
+      "https://images.unsplash.com/photo-1660983947114-d893fcf89c7a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8cGVyc2lhbiUyMGNhdHxlbnwwfHwwfHx8MA%3D%3D",
   },
 ];
 
@@ -51,51 +54,69 @@ const upcomingAppointments = [
 
 const CustomerDashboard: React.FC = () => {
   const navigate = useNavigate();
-
-  const [showAddPetModal, setShowAddPetModal] = useState(false);
+  const [petsData, setPetsData] = useState<Pet[]>(petsDataInitial);
+  const [showPetModal, setShowPetModal] = useState(false);
+  const [editingPet, setEditingPet] = useState<Pet | null>(null);
 
   // ---- NAVIGATION ----
   const goToBook = (pet: Pet) => navigate("/appoint", { state: pet });
   const goToRecords = (pet: Pet) => navigate("/history", { state: pet });
-  const goToEdit = (pet: Pet) => navigate("/editpet", { state: pet });
 
-  // ---- SAVE NEW PET ----
+  // ---- SAVE NEW OR EDITED PET ----
   const handleSavePet = (pet: Pet) => {
-    console.log("New pet saved:", pet);
-    setShowAddPetModal(false);
+    if (editingPet) {
+      // Update existing pet
+      setPetsData((prev) =>
+        prev.map((p) => (p.id === editingPet.id ? { ...editingPet, ...pet } : p))
+      );
+    } else {
+      // Add new pet
+      const newPet = { ...pet, id: Date.now().toString() };
+      setPetsData((prev) => [...prev, newPet]);
+    }
+    setEditingPet(null);
+    setShowPetModal(false);
+  };
+
+  // ---- OPEN MODAL FOR EDIT ----
+  const handleEditPet = (pet: Pet) => {
+    setEditingPet(pet);
+    setShowPetModal(true);
   };
 
   return (
     <Layout title="Dashboard">
-
-      {/* ----- PET FORM POPUP MODAL (USING YOUR COMPONENT) ----- */}
-      {showAddPetModal && (
+      {/* PET FORM MODAL */}
+      {showPetModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-lg p-6 w-full max-w-lg relative">
-
             <button
-              onClick={() => setShowAddPetModal(false)}
+              onClick={() => {
+                setShowPetModal(false);
+                setEditingPet(null);
+              }}
               className="absolute top-3 right-3 text-gray-600 hover:text-black text-xl"
             >
               ✕
             </button>
 
-            {/* Your Imported Pet Form */}
             <PetForm
+              initialData={editingPet || undefined}
               onSave={handleSavePet}
-              onCancel={() => setShowAddPetModal(false)}
+              onCancel={() => {
+                setShowPetModal(false);
+                setEditingPet(null);
+              }}
             />
           </div>
         </div>
       )}
 
-      {/* ----- DASHBOARD CONTENT (HIDDEN WHEN POPUP IS OPEN) ----- */}
-      <div className={`${showAddPetModal ? "hidden" : "block"} p-6 max-w-6xl mx-auto space-y-10`}>
-
+      {/* DASHBOARD CONTENT */}
+      <div className={`${showPetModal ? "hidden" : "block"} p-6 max-w-6xl mx-auto space-y-10`}>
         {/* UPCOMING APPOINTMENTS */}
         <section>
           <h2 className="text-2xl font-bold mb-4">Upcoming Appointments</h2>
-
           <div className="grid md:grid-cols-2 gap-4">
             {upcomingAppointments.map((appt, i) => (
               <div
@@ -118,13 +139,9 @@ const CustomerDashboard: React.FC = () => {
         {/* UPCOMING VACCINATIONS */}
         <section>
           <h2 className="text-2xl font-bold mb-4">Upcoming Vaccinations</h2>
-
           <div className="grid md:grid-cols-2 gap-4">
             {petsData.map((pet) => (
-              <div
-                key={pet.id}
-                className="p-4 bg-white rounded-xl shadow flex justify-between"
-              >
+              <div key={pet.id} className="p-4 bg-white rounded-xl shadow flex justify-between">
                 <div>
                   <p className="text-lg font-semibold">{pet.name}</p>
                   <p className="text-sm text-gray-600">{pet.breed}</p>
@@ -139,9 +156,8 @@ const CustomerDashboard: React.FC = () => {
         <section>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold">My Pets</h2>
-
             <button
-              onClick={() => setShowAddPetModal(true)}
+              onClick={() => setShowPetModal(true)}
               className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
             >
               Add Pet +
@@ -150,16 +166,12 @@ const CustomerDashboard: React.FC = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {petsData.map((pet) => (
-              <div
-                key={pet.id}
-                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-4"
-              >
+              <div key={pet.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition p-4">
                 <img
                   src={pet.image}
                   alt={pet.name}
                   className="w-full h-40 object-cover rounded-md"
                 />
-
                 <h3 className="text-xl font-semibold mt-3">{pet.name}</h3>
                 <p className="text-gray-600">{pet.breed}</p>
                 <p className="text-gray-600 text-sm">{pet.age}</p>
@@ -181,7 +193,7 @@ const CustomerDashboard: React.FC = () => {
 
                   <button
                     className="w-full bg-gray-700 text-white py-2 rounded-md hover:bg-gray-800"
-                    onClick={() => goToEdit(pet)}
+                    onClick={() => handleEditPet(pet)}
                   >
                     Edit Pet
                   </button>
@@ -191,7 +203,6 @@ const CustomerDashboard: React.FC = () => {
           </div>
         </section>
       </div>
-
     </Layout>
   );
 };

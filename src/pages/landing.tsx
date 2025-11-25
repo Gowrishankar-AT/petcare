@@ -37,7 +37,7 @@ const LandingPage: React.FC = () => {
   id="home"
   className="bg-[url('https://i.pinimg.com/1200x/88/e6/6f/88e66f1ec7c0b6982757ff5959b0d7d1.jpg')] bg-cover bg-center py-16 flex flex-col items-center text-center"
 >
-  <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Welcome to Development Team Clinic</h1>
+  <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Welcome toShnaker Clinic</h1>
   <p className="text-white max-w-2xl mb-6">
     Your trusted partner for your furry friends. Compassionate care, modern facilities, and personalized attention.
   </p>

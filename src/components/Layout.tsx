@@ -25,7 +25,7 @@ const Layout = ({ children, title }: LayoutProps) => {
       <header className="border-b bg-card sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-primary/10 p-2 rounded-lg">
+            <div className="bg-primary/10 p-2 rounded-lg" onClick={() => navigate('/dashboard')}>
               <Calendar className="h-6 w-6 text-primary" />
             </div>
             <div>

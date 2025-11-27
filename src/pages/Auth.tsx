@@ -33,8 +33,13 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/5 p-4">
-      <Card className="w-full max-w-md shadow-lg">
+    <div
+  className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat p-4"
+  style={{
+    backgroundImage: "url('/log.png')",
+  }}
+>
+      <Card className="w-full max-w-md shadow-lg bg-white/20 backdrop-blur-lg border border-white/30">
         <CardHeader className="space-y-1 text-center">
           <div className="flex justify-center mb-4">
             <div className="bg-primary/10 p-3 rounded-full">

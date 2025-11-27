@@ -160,10 +160,10 @@ const AppointmentPage = () => {
                 </DialogDescription>
               </DialogHeader>
 
-              <AppointmentForm
+              {/* <AppointmentForm
                 appointment={selectedAppointment || undefined}
                 onSuccess={handleAppointmentBooked}
-              />
+              /> */}
             </DialogContent>
           </Dialog>
         </div>

@@ -6,7 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { Pet } from "@/components/petform";
-interface Appointment {
+
+export interface Appointment {
   id: string;
   patientId: string;
   petId: string;
@@ -17,6 +18,7 @@ interface Appointment {
   reason: string;
   status: 'scheduled' | 'completed' | 'cancelled';
 }
+
 
 interface AppointmentFormProps {
   onSuccess: () => void;

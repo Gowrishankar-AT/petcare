@@ -6,6 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+
+// Icons
+import { User, Mail, Phone, NotebookPen } from "lucide-react";
 
 interface CustomerProfile {
   id: string;
@@ -15,9 +19,28 @@ interface CustomerProfile {
   preferences?: string;
 }
 
+// ✅ Static array of user profiles (replace localStorage)
+const userProfiles: CustomerProfile[] = [
+  {
+    id: "1",
+    name: "Demo User",
+    email: "demo@example.com",
+    phone: "9876543210",
+    preferences: "Loves pets",
+  },
+  {
+    id: "2",
+    name: "John Doe",
+    email: "john@example.com",
+    phone: "9123456780",
+    preferences: "Evening appointments preferred",
+  },
+];
+
 const Profile = () => {
   const { user, logout } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [profileData, setProfileData] = useState<CustomerProfile>({
     id: "",
@@ -29,27 +52,32 @@ const Profile = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
-  // Load profile from localStorage
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  // Load profile from static array
   useEffect(() => {
     if (!user) return;
-    const storedProfiles = localStorage.getItem("customerProfiles");
-    const profiles: CustomerProfile[] = storedProfiles ? JSON.parse(storedProfiles) : [];
 
-    const existingProfile = profiles.find((p) => p.id === user.id);
+    // Try matching from static array
+    const existingProfile = userProfiles.find((p) => p.id === user.id);
 
     if (existingProfile) {
       setProfileData(existingProfile);
     } else {
-      // If not found, create a new profile entry
+      // If no profile found, create one dynamically
       const newProfile: CustomerProfile = {
         id: user.id,
         name: user.name || "",
-        email: "",
+        email: user.email || "",
         phone: "",
         preferences: "",
       };
-      profiles.push(newProfile);
-      localStorage.setItem("customerProfiles", JSON.stringify(profiles));
+
+      // Add to static array
+      userProfiles.push(newProfile);
       setProfileData(newProfile);
     }
   }, [user]);
@@ -64,18 +92,17 @@ const Profile = () => {
       return;
     }
 
-    const storedProfiles = localStorage.getItem("customerProfiles");
-    const profiles: CustomerProfile[] = storedProfiles ? JSON.parse(storedProfiles) : [];
-
-    const index = profiles.findIndex((p) => p.id === profileData.id);
+    // Update profile in static array
+    const index = userProfiles.findIndex((p) => p.id === profileData.id);
     if (index !== -1) {
-      profiles[index] = profileData;
-    } else {
-      profiles.push(profileData);
+      userProfiles[index] = profileData;
     }
 
-    localStorage.setItem("customerProfiles", JSON.stringify(profiles));
-    toast({ title: "Profile Updated", description: "Your details have been saved." });
+    toast({
+      title: "Profile Updated",
+      description: "Your details have been saved.",
+    });
+
     setIsEditing(false);
   };
 
@@ -90,61 +117,105 @@ const Profile = () => {
         </div>
 
         {/* Profile Form */}
-        <div className="p-6 bg-white rounded-lg shadow space-y-4">
-          <div className="space-y-2">
-            <Label>Name</Label>
-            <Input
-              value={profileData.name}
-              onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
-              readOnly={!isEditing}
-            />
-          </div>
+        <div className="relative p-6 bg-white rounded-lg shadow space-y-6">
 
-          <div className="space-y-2">
-            <Label>Email</Label>
-            <Input
-              type="email"
-              value={profileData.email}
-              onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-              readOnly={!isEditing}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Phone</Label>
-            <Input
-              value={profileData.phone}
-              onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
-              readOnly={!isEditing}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Preferences</Label>
-            <Input
-              placeholder="E.g., preferred vet, pet care notes"
-              value={profileData.preferences || ""}
-              onChange={(e) => setProfileData({ ...profileData, preferences: e.target.value })}
-              readOnly={!isEditing}
-            />
-          </div>
-
-          {/* Edit / Save Button */}
-          <div className="flex justify-end">
+          {/* Edit / Save button inside top-right */}
+          <div className="absolute top-4 right-4">
             {isEditing ? (
               <Button onClick={handleSave}>Save</Button>
             ) : (
-              <Button onClick={() => setIsEditing(true)}>Edit</Button>
+              <Button variant="outline" onClick={() => setIsEditing(true)}>
+                Edit
+              </Button>
             )}
           </div>
+
+          {/* Name */}
+          <div className="space-y-2">
+            <Label>Name</Label>
+
+            {!isEditing ? (
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded border text-gray-800">
+                <User className="w-5 h-5 text-gray-500" />
+                <span className="font-medium">{profileData.name || "Not provided"}</span>
+              </div>
+            ) : (
+              <Input
+                value={profileData.name}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, name: e.target.value })
+                }
+              />
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="space-y-2">
+            <Label>Email</Label>
+
+            {!isEditing ? (
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded border text-gray-800">
+                <Mail className="w-5 h-5 text-gray-500" />
+                <span className="font-medium">{profileData.email || "Not provided"}</span>
+              </div>
+            ) : (
+              <Input
+                type="email"
+                value={profileData.email}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, email: e.target.value })
+                }
+              />
+            )}
+          </div>
+
+          {/* Phone */}
+          <div className="space-y-2">
+            <Label>Phone</Label>
+
+            {!isEditing ? (
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded border text-gray-800">
+                <Phone className="w-5 h-5 text-gray-500" />
+                <span className="font-medium">{profileData.phone || "Not provided"}</span>
+              </div>
+            ) : (
+              <Input
+                value={profileData.phone}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, phone: e.target.value })
+                }
+              />
+            )}
+          </div>
+
+          {/* Preferences */}
+          <div className="space-y-2">
+            <Label>Preferences</Label>
+
+            {!isEditing ? (
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded border text-gray-800">
+                <NotebookPen className="w-5 h-5 text-gray-500" />
+                <span className="font-medium">{profileData.preferences || "No preferences added"}</span>
+              </div>
+            ) : (
+              <Input
+                value={profileData.preferences || ""}
+                onChange={(e) =>
+                  setProfileData({ ...profileData, preferences: e.target.value })
+                }
+              />
+            )}
+          </div>
+
         </div>
 
         {/* Logout Button */}
         <div className="flex justify-center mt-6">
-          <Button variant="destructive" onClick={logout}>
+          <Button variant="destructive" onClick={handleLogout}>
             Logout
           </Button>
         </div>
+
       </div>
     </Layout>
   );

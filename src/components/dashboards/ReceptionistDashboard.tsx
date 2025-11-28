@@ -1,156 +1,266 @@
-import { useState, useEffect } from 'react';
-import Layout from '@/components/Layout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Users, CheckCircle, XCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+// ReceptionistDashboard.tsx
+import React from "react";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-interface Appointment {
-  id: string;
-  patientId: string;
-  patientName?: string;
-  doctorName: string;
-  date: string;
-  time: string;
-  reason: string;
-  status: 'scheduled' | 'completed' | 'cancelled';
-}
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import Layout from "../Layout";
+
+const monthlyStats = [
+  { month: "Jan", patients: 120, satisfaction: 78 },
+  { month: "Feb", patients: 150, satisfaction: 82 },
+  { month: "Mar", patients: 180, satisfaction: 85 },
+  { month: "Apr", patients: 160, satisfaction: 80 },
+  { month: "May", patients: 200, satisfaction: 88 },
+  { month: "Jun", patients: 220, satisfaction: 90 },
+  { month: "Jul", patients: 250, satisfaction: 92 },
+];
+
+const petTypeData = [
+  { name: "Dogs", value: 55 },
+  { name: "Cats", value: 30 },
+  { name: "Birds", value: 10 },
+  { name: "Others", value: 5 },
+];
+
+const COLORS = ["#6366f1", "#22c55e", "#f43f5e", "#f59e0b"];
+
+const treatments = [
+  { name: "Vaccination", percentage: 80, color: "bg-indigo-500" },
+  { name: "Deworming", percentage: 65, color: "bg-green-500" },
+  { name: "Dental Care", percentage: 50, color: "bg-rose-500" },
+  { name: "X-Ray", percentage: 35, color: "bg-yellow-500" },
+];
+
+const modules = [
+  { name: "Appointment Management", description: "Manage all customer appointments", page:"adminapp" },
+  { name: "Customer Management", description: "View and manage customer information", page:"" },
+  { name: "Pet Management", description: "Track pet details and medical history", page:"" },
+  { name: "Staff Management", description: "Manage doctors, receptionists, and staff", page:"" },
+  { name: "Treatment & Services", description: "Manage treatments, services, and pricing", page:"" },
+];
+
+const staff = [
+  { name: "Dr. Olivia Hart", specialty: "Surgery", avatar: "/avatar1.png" },
+  { name: "Dr. Liam Carter", specialty: "Dermatology", avatar: "/avatar2.png" },
+  { name: "Dr. Sophia Lane", specialty: "General Vet", avatar: "/avatar3.png" },
+];
 
 const ReceptionistDashboard = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>([]);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    loadAppointments();
-  }, []);
-
-  const loadAppointments = () => {
-    const storedAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    
-    const appointmentsWithNames = storedAppointments.map((apt: Appointment) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const patient = users.find((u: any) => u.id === apt.patientId);
-      return {
-        ...apt,
-        patientName: patient?.name || 'Unknown Patient',
-      };
-    });
-    
-    setAppointments(appointmentsWithNames);
-  };
-
-  const updateAppointmentStatus = (id: string, status: 'completed' | 'cancelled') => {
-    const storedAppointments = JSON.parse(localStorage.getItem('appointments') || '[]');
-    const updated = storedAppointments.map((apt: Appointment) =>
-      apt.id === id ? { ...apt, status } : apt
-    );
-    localStorage.setItem('appointments', JSON.stringify(updated));
-    loadAppointments();
-    
-    toast({
-      title: 'Appointment Updated',
-      description: `Appointment marked as ${status}`,
-    });
-  };
-
-  const todayAppointments = appointments.filter(
-    (apt) => new Date(apt.date).toDateString() === new Date().toDateString()
-  );
-
+  const navigate = useNavigate();
   return (
-    <Layout title="Receptionist Dashboard">
-      <div className="space-y-6">
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Appointments</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+    <Layout title="Dashboard">
+    <div className="p-6 md:p-10 space-y-10">
+       <div className="p-6 md:p-10">
+      <h1 className="text-2xl font-bold mb-6">Admin Modules</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {modules.map((module, i) => (
+          <Card
+            key={i}
+            className="shadow-lg border rounded-xl hover:scale-105 transform transition cursor-pointer"
+          >
+            <CardHeader onClick={() => navigate(`/${module.page}`)}>
+              <CardTitle className="text-lg font-semibold">{module.name}</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{appointments.length}</div>
+              <p className="text-gray-500">{module.description}</p>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Today</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{todayAppointments.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Scheduled</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {appointments.filter((a) => a.status === 'scheduled').length}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        ))}
+      </div>
+    </div>
 
-        <Card>
+      {/* ======================= TOP STATS ======================= */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          {
+            title: "Total Patients",
+            value: "3,240",
+            trend: "+12%",
+            desc: "Compared to last month",
+          },
+          {
+            title: "New Appointments",
+            value: "420",
+            trend: "+8%",
+            desc: "From last month",
+          },
+          {
+            title: "Surgical Procedures",
+            value: "78",
+            trend: "-5%",
+            desc: "From last month",
+          },
+          {
+            title: "Overall Visitors",
+            value: "9,820",
+            trend: "+20%",
+            desc: "From last month",
+          },
+          
+        ].map((stat, i) => (
+          <Card key={i} className="shadow-sm border rounded-xl">
+            <CardHeader>
+              <CardTitle className="text-sm text-gray-500">{stat.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-1">
+              <p className="text-3xl font-bold">{stat.value}</p>
+              <p className="text-sm flex items-center gap-2">
+                <span
+                  className={`font-medium ${
+                    stat.trend.includes("-") ? "text-red-500" : "text-green-600"
+                  }`}
+                >
+                  {stat.trend}
+                </span>
+                <span className="text-gray-400">{stat.desc}</span>
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* ======================= MIDDLE CHART SECTION ======================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Line Chart */}
+        <Card className="lg:col-span-2 shadow-sm border rounded-xl">
           <CardHeader>
-            <CardTitle>All Appointments</CardTitle>
+            <CardTitle>Patient Statistics</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {appointments.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">No appointments found</p>
-              ) : (
-                appointments.map((apt) => (
-                  <div
-                    key={apt.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border rounded-lg"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{apt.patientName}</p>
-                        <Badge variant={apt.status === 'scheduled' ? 'default' : 'secondary'}>
-                          {apt.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">Dr. {apt.doctorName}</p>
-                      <p className="text-sm text-muted-foreground">{apt.reason}</p>
-                      <div className="flex gap-4 text-sm">
-                        <span>{new Date(apt.date).toLocaleDateString()}</span>
-                        <span>{apt.time}</span>
-                      </div>
-                    </div>
-                    {apt.status === 'scheduled' && (
-                      <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateAppointmentStatus(apt.id, 'completed')}
-                          className="gap-2"
-                        >
-                          <CheckCircle className="h-4 w-4" />
-                          Complete
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => updateAppointmentStatus(apt.id, 'cancelled')}
-                          className="gap-2"
-                        >
-                          <XCircle className="h-4 w-4" />
-                          Cancel
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
+          <CardContent className="h-72">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={monthlyStats}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Line
+                  type="monotone"
+                  dataKey="patients"
+                  stroke="#6366f1"
+                  strokeWidth={3}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Pie / Donut Chart */}
+        <Card className="shadow-sm border rounded-xl">
+          <CardHeader>
+            <CardTitle>Patients by Type</CardTitle>
+          </CardHeader>
+          <CardContent className="h-72 flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={petTypeData}
+                  innerRadius={60}
+                  outerRadius={95}
+                  dataKey="value"
+                  paddingAngle={3}
+                >
+                  {petTypeData.map((_, idx) => (
+                    <Cell key={idx} fill={COLORS[idx]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
           </CardContent>
         </Card>
       </div>
+
+      {/* ======================= BOTTOM SECTION ======================= */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        {/* Top Treatments */}
+        <Card className="shadow-sm border rounded-xl">
+          <CardHeader>
+            <CardTitle>Top Treatments</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {treatments.map((t, i) => (
+              <div key={i}>
+                <div className="flex justify-between mb-1">
+                  <span className="text-sm font-medium">{t.name}</span>
+                  <span className="text-sm text-gray-500">{t.percentage}%</span>
+                </div>
+                <div className="w-full h-2 bg-gray-200 rounded-full">
+                  <div
+                    className={`h-full rounded-full ${t.color}`}
+                    style={{ width: `${t.percentage}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Staff */}
+        <Card className="shadow-sm border rounded-xl">
+          <CardHeader>
+            <CardTitle>Staff</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {staff.map((s, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Avatar>
+                  <AvatarImage src={s.avatar} />
+                  <AvatarFallback>{s.name.slice(0, 2)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium">{s.name}</p>
+                  <p className="text-sm text-gray-500">{s.specialty}</p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Satisfaction Rate */}
+        <Card className="shadow-sm border rounded-xl">
+          <CardHeader>
+            <CardTitle>Satisfaction Rate</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-4xl font-bold mb-4">92%</p>
+            <div className="h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={monthlyStats}>
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="satisfaction"
+                    stroke="#22c55e"
+                    strokeWidth={3}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+      </div>
+    </div>
     </Layout>
   );
 };

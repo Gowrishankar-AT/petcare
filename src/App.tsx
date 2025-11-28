@@ -12,6 +12,7 @@ import AppointmentPage from "./pages/appointment";
 import HistoryPage from "./pages/history";
 import PetListPage from "./pages/petlist";
 import LandingPage from "./pages/landing";
+import AppointmentsPage from "./components/AppointmentAdmin";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -30,6 +31,7 @@ const App = () => (
             <Route path='/history'element={<HistoryPage />}/>
             <Route path='/petlist'element={<PetListPage />}/>
              <Route path='/landing'element={<LandingPage />}/>
+             <Route path='/adminapp'element={<AppointmentsPage />}/>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<LandingPage />} />
           </Routes>

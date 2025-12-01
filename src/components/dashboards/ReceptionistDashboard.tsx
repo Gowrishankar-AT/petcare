@@ -51,10 +51,10 @@ const treatments = [
 
 const modules = [
   { name: "Appointment Management", description: "Manage all customer appointments", page:"adminapp" },
-  { name: "Customer Management", description: "View and manage customer information", page:"" },
-  { name: "Pet Management", description: "Track pet details and medical history", page:"" },
-  { name: "Staff Management", description: "Manage doctors, receptionists, and staff", page:"" },
-  { name: "Treatment & Services", description: "Manage treatments, services, and pricing", page:"" },
+  { name: "Customer Management", description: "View and manage customer information", page:"custmgm" },
+  { name: "Pet Management", description: "Track pet details and medical history", page:"pets" },
+  { name: "Staff Management", description: "Manage doctors, receptionists, and staff", page:"staff" },
+  { name: "Treatment & Services", description: "Manage treatments, services, and pricing", page:"treatment" },
 ];
 
 const staff = [

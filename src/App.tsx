@@ -13,6 +13,10 @@ import HistoryPage from "./pages/history";
 import PetListPage from "./pages/petlist";
 import LandingPage from "./pages/landing";
 import AppointmentsPage from "./components/AppointmentAdmin";
+import CustomerManagement from "./pages/customermang";
+import PetsPage from "./pages/petsmgm";
+import StaffPage from "./pages/staff";
+import TreatmentPage from "./pages/treatmentpage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -32,6 +36,10 @@ const App = () => (
             <Route path='/petlist'element={<PetListPage />}/>
              <Route path='/landing'element={<LandingPage />}/>
              <Route path='/adminapp'element={<AppointmentsPage />}/>
+             <Route path='/custmgm'element={<CustomerManagement />}/>
+             <Route path='/pets'element={<PetsPage/>}/>
+             <Route path='/staff'element={<StaffPage/>}/>
+             <Route path='/treatment'element={<TreatmentPage/>}/>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<LandingPage />} />
           </Routes>
